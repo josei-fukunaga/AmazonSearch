@@ -1,0 +1,9 @@
+C:\Users\josei\source\repos\AmazonSearch\bin\Release\AmazonSearch.exe.config
+C:\Users\josei\source\repos\AmazonSearch\bin\Release\AmazonSearch.exe
+C:\Users\josei\source\repos\AmazonSearch\bin\Release\AmazonSearch.pdb
+C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.Form1.resources
+C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.Properties.Resources.resources
+C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.csproj.GenerateResource.cache
+C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.exe
+C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.pdb
+C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.csprojAssemblyReference.cache
