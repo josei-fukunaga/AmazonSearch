@@ -31,8 +31,9 @@ namespace AmazonSearch
             var sCategory = new string[1024];
             var scr = new SampleScraping();
 
-            sURL = "https://www.amazon.co.jp/gp/site-directory?ref_=nav_em_T1_0_2_2_20__fullstore";
+            sURL = "https://www.amazon.co.jp";
             string sHtml = scr.GetHtml(sURL);
+
             GetCategory(sHtml, sCategory);
 
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.EnableResizing;
@@ -131,12 +132,14 @@ namespace AmazonSearch
                 sPrice = "";
             }
 
-            sURL = sURL_Category + comboBox_alias1.Text + sURL_Item + textBox_keyword.Text + sPrice + "&emi=AN1VRQENFRJN5";
+            sURL = sURL_Category + (comboBox_alias1.Text.Length == 0 ? "" : ConvertSJIStoUTF8(comboBox_alias1.Text)) + sURL_Item + 
+                (textBox_keyword.Text.Length == 0 ? "" : ConvertSJIStoUTF8(textBox_keyword.Text)) + sPrice + "&emi=AN1VRQENFRJN5";
 
             //System.Diagnostics.Process.Start(sURL);
             string sHtml = scr.GetHtml(sURL);
 
             int next, tail;
+            int page_count = 1;
             string work;
 
             dataGridView1.Rows.Clear();
@@ -148,19 +151,30 @@ namespace AmazonSearch
                     break;
                 }
 
-                next = sHtml.IndexOf("<li class=\"a-last\"><a href=\"");
+                break;
+
+                next = sHtml.LastIndexOf("</span><a href=\"/s?k=");
                 if (next == -1)
                 {
                     break;
                 }
                 else
                 {
-                    tail = sHtml.IndexOf(">次へ");
-                    work = System.Web.HttpUtility.UrlDecode(sHtml.Substring(next + 28, tail - next - 29));
+                    tail = sHtml.LastIndexOf("ref=sr_pg_");
+                    work = System.Web.HttpUtility.UrlDecode(sHtml.Substring(next + 16, tail - next - 6));
                 }
 
-                sHtml = scr.GetHtml("https://amazon.co.jp" + work);
+                sHtml = scr.GetHtml("https://amazon.co.jp" + work + page_count.ToString());
+
+                page_count++;
             }
+        }
+
+        public static string ConvertSJIStoUTF8(string text)
+        {
+            byte[] bytesData = System.Text.Encoding.UTF8.GetBytes(text);
+            string ret = '%' + BitConverter.ToString(bytesData).Replace('-', '%');
+            return ret;
         }
 
         private bool PriceCheck()
@@ -199,7 +213,7 @@ namespace AmazonSearch
 
         private bool SetDataToGrid(string sHtml)
         {
-            int cnt, row_count, tail;
+            int cnt, row_count, top, tail;
             string work1, work2;
             var sLink = new string[4096];
             var sImage = new string[4096];
@@ -224,7 +238,8 @@ namespace AmazonSearch
             }
 
             //Link
-            MatchCollection match_category = Regex.Matches(sHtml, "<a class=\"a-link-normal\" target=\"_blank\" href=\"");
+            //MatchCollection match_category = Regex.Matches(sHtml, "<a class=\"a-link-normal\" target=\"_blank\" href=\"");
+            MatchCollection match_category = Regex.Matches(sHtml, "<a class=\"a-link-normal s-no-outline\" target=\"_blank\" href=\"");
             cnt = 0;
             row_count = 0;
             foreach (Match m in match_category)
@@ -234,7 +249,8 @@ namespace AmazonSearch
                 sLink[cnt] = sHtml.Substring(index);
 
                 tail = sLink[cnt].IndexOf(">");
-                work1 = System.Web.HttpUtility.UrlDecode(sLink[cnt].Substring(47, tail - 48));
+                //work1 = System.Web.HttpUtility.UrlDecode(sLink[cnt].Substring(47, tail - 48));
+                work1 = System.Web.HttpUtility.UrlDecode(sLink[cnt].Substring(60, tail - 61));
                 work2 = work1.Replace("amp;", "");
 
                 cnt++;
@@ -248,32 +264,34 @@ namespace AmazonSearch
             }
 
             //Image
-            match_category = Regex.Matches(sHtml, "<img src=\"https://m.media-amazon.com/images/");
+            //match_category = Regex.Matches(sHtml, "<img src=\"https://m.media-amazon.com/images/");
+            match_category = Regex.Matches(sHtml, "<img class=\"s-image\" src=\"https://m.media-amazon.com/images/");
             cnt = 0;
             foreach (Match m in match_category)
             {
                 int index = m.Index; // 発見した文字列の開始位置
                 sImage[cnt] = sHtml.Substring(index);
 
-                tail = sImage[cnt].IndexOf("class=\"s-image\"");
-                work1 = System.Web.HttpUtility.UrlDecode(sImage[cnt].Substring(1, tail - 28));
-                work2 = work1.Replace("img src=\"", "");
+                tail = sImage[cnt].IndexOf("\" srcset=");
+                work1 = System.Web.HttpUtility.UrlDecode(sImage[cnt].Substring(26, tail - 26));
+                //work2 = work1.Replace("img src=\"", "");
 
-                sGridImage[cnt] = work2;
+                sGridImage[cnt] = work1;
 
                 cnt++;
             }
 
             //ItemtName
-            match_category = Regex.Matches(sHtml, "class=\"s-image\"\n                         alt=\"");
+            match_category = Regex.Matches(sHtml, "<img class=\"s-image\" src=\"https://m.media-amazon.com/images/");
             cnt = 0;
             foreach (Match m in match_category)
             {
                 int index = m.Index; // 発見した文字列の開始位置
                 sItemName[cnt] = sHtml.Substring(index);
 
-                tail = sItemName[cnt].IndexOf("\n                         srcset=");
-                work1 = System.Web.HttpUtility.UrlDecode(sItemName[cnt].Substring(46, tail - 47));
+                top = sItemName[cnt].IndexOf("\" alt=\"");
+                tail = sItemName[cnt].IndexOf("\" data-image-index=\"");
+                work1 = System.Web.HttpUtility.UrlDecode(sItemName[cnt].Substring(top + 7, tail - top - 7));
 
                 sGridItemName[cnt] = work1;
 
@@ -301,6 +319,7 @@ namespace AmazonSearch
                 WebClient wc = new WebClient();
                 Stream stream = wc.OpenRead(sGridImage[i]);
                 dataGridView1.Rows.Add(sGridItemName[i], sGridPrice[i], new Bitmap(stream), sGridLink[i]);
+                //dataGridView1.Rows.Add(sGridItemName[i], sGridPrice[i], null, sGridLink[i]);
                 comboBox_image.Items.Add(sGridImage[i]);
                 stream.Close();
             }

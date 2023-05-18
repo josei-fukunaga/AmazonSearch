@@ -7,3 +7,12 @@ C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.csproj.Generat
 C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.exe
 C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.pdb
 C:\Users\josei\source\repos\AmazonSearch\obj\Release\AmazonSearch.csprojAssemblyReference.cache
+D:\Downloads\AmazonSearch-master\bin\Release\AmazonSearch.exe.config
+D:\Downloads\AmazonSearch-master\bin\Release\AmazonSearch.exe
+D:\Downloads\AmazonSearch-master\bin\Release\AmazonSearch.pdb
+D:\Downloads\AmazonSearch-master\obj\Release\AmazonSearch.Form1.resources
+D:\Downloads\AmazonSearch-master\obj\Release\AmazonSearch.Properties.Resources.resources
+D:\Downloads\AmazonSearch-master\obj\Release\AmazonSearch.csproj.GenerateResource.cache
+D:\Downloads\AmazonSearch-master\obj\Release\AmazonSearch.csproj.CoreCompileInputs.cache
+D:\Downloads\AmazonSearch-master\obj\Release\AmazonSearch.exe
+D:\Downloads\AmazonSearch-master\obj\Release\AmazonSearch.pdb
