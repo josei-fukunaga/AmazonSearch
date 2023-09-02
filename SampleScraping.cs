@@ -2,6 +2,10 @@
 using System.Net;
 using System.Text;
 
+/************************************************/
+/*             ver.1.0                          */
+/************************************************/
+
 namespace AmazonSearch
 {
     class SampleScraping
